@@ -1,0 +1,30 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.4.2'
+}
+
+apply plugin: 'io.spring.dependency-management'
+group 'com.zhangweiwhim'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+Map<String, String> versions = [
+        ElasticVersion: "7.9.3",
+        LombokVersion : "1.18.16",
+        JdVersion     : "2.11.4",
+        GsonVersion   : "2.8.5",
+        JasyptVersion : "3.0.3"
+]
+dependencies {
+    implementation('org.springframework.boot:spring-boot-starter-web')
+//    implementation('org.springframework.boot:spring-boot-starter-data-elasticsearch')
+
+    implementation('org.elasticsearch:elasticsearch:' + versions.ElasticVersion)
+    implementation('org.elasticsearch.client:elasticsearch-rest-high-level-client:' + versions.ElasticVersion)
+    implementation('com.github.ulisesbocchio:jasypt-spring-boot-starter:' + versions.JasyptVersion)
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+}

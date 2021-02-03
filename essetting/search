@@ -1,0 +1,76 @@
+POST /carinfo/_bulk
+{ "index": { "_id": 1 }}
+{ "model":"中大型","brand" : "奥迪","series":"奥迪Q5L"}
+{ "index": { "_id": 2 }}
+{ "model":"小型车","brand" : "奔驰","series":"奔驰A级" }
+{ "index": { "_id": 3 }}
+{ "model": "SUV","brand" : "宝马","series":"宝马X3" }
+{ "index": { "_id": 4 }}
+{ "model":"中型车","brand" : "奔驰","series":"奔驰GLC" }
+{ "index": { "_id": 5 }}
+{ "model":"SUV","brand" : "威马","series":"威马EX6" }
+{ "index": { "_id": 6 }}
+{ "model":"SUV","brand" : "宝沃","series":"宝沃BX5" }
+{ "index": { "_id": 7 }}
+{ "model":"SUV","brand" : "宝沃","series":"宝沃BX7" }
+{ "index": { "_id": 8 }}
+{ "model":"中大型","brand" : "奥迪","series":"奥迪A6L"}
+{ "index": { "_id": 9 }}
+{ "model":"中大型","brand" : "奇瑞","series":"瑞虎7"}
+{ "index": { "_id": 10 }}
+{ "model":"中大型","brand" : "奇瑞","series":"瑞虎8 PLUS"}
+{ "index": { "_id": 11 }}
+{ "model":"中型车","brand" : "奔驰","series":"奔驰C级" }
+{ "index": { "_id": 12 }}
+{ "model":"中型车","brand" : "奔驰","series":"奔驰GLB" }
+{ "index": { "_id": 13 }}
+{ "model":"中型车","brand" : "奔驰","series":"奔驰A级AMG" }
+{ "index": { "_id": 14 }}
+{ "model":"中型车","brand" : "奔驰","series":"奔驰EQC" }
+{ "index": { "_id": 15 }}
+{ "model":"中型车","brand" : "奔驰","series":"奔驰E级" }
+{ "index": { "_id": 16 }}
+{ "model":"中型车","brand" : "奔驰","series":"奔驰GLA" }
+{ "index": { "_id": 17 }}
+{ "model":"中型车","brand" : "奔驰","series":"奔驰V级" }
+{ "index": { "_id": 18 }}
+{ "model":"中型车","brand" : "奔驰","series":"奔驰威霆" }
+
+DELETE carinfo
+
+GET /carinfo/_analyze
+{
+  "text": ["宝沃"],
+  "analyzer": "ik_pinyin_analyzer"
+}
+
+
+
+
+
+
+
+GET carinfo/_search
+{
+  "_source": [
+    "brand",
+    "series"
+  ],
+  "query": {
+    "multi_match": {
+      "query": "GL",
+      "type": "best_fields",
+      "fields": [
+        "series",
+        "series.my_pinyin",
+        "brand",
+        "brand.my_pinyin"
+      ],
+      "minimum_should_match": "100%"
+
+    }
+  }
+}
+
+
+curl --user elastic:changeme -XGET "http://localhost:9200/carinfo/_search" -H 'Content-Type: application/json' -d'{  "_source": [    "brand",    "series"  ],  "query": {    "multi_match": {      "query": "chi",      "type": "best_fields",      "fields": [        "brand",         "series",         "brand.my_pinyin",        "series.my_pinyin"      ], "minimum_should_match": "5%"    }  }}'
