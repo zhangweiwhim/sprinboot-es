@@ -6,6 +6,8 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.asyncsearch.AsyncSearchResponse;
+import org.elasticsearch.client.asyncsearch.SubmitAsyncSearchRequest;
 import org.elasticsearch.common.text.Text;
 import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -45,6 +47,10 @@ public class CarInfoService {
     public List<CarInfoDocument> findByInput(String input) throws Exception {
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.indices(INDEX);
+
+//        SubmitAsyncSearchRequest request
+//                = new SubmitAsyncSearchRequest(searchSource, indices);
+
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 //        MultiMatchQueryBuilder multiMatchQueryBuilder = QueryBuilders.multiMatchQuery(input, "brand", "brand.my_pinyin", "series", "series.my_pinyin");
         MultiMatchQueryBuilder multiMatchQueryBuilder = QueryBuilders.multiMatchQuery(input, "series.my_pinyin");
@@ -62,13 +68,16 @@ public class CarInfoService {
         HighlightBuilder.Field highlightSeriesPY = new HighlightBuilder.Field("series.my_pinyin");
         highlightBuilder.field(highlightSeriesPY);
         highlightBuilder.requireFieldMatch(true);//多个高亮显示
-        String leftTag = "<span style='color:red'>";
+        String leftTag = "<span style='color:#606'>";
         String rightTag = "</span>";
         highlightBuilder.preTags(leftTag);
         highlightBuilder.postTags(rightTag);
         highlightBuilder.requireFieldMatch(true);
         searchSourceBuilder.highlighter(highlightBuilder);
         searchRequest.source(searchSourceBuilder);
+
+//        AsyncSearchResponse response = client.asyncSearch()
+//                .submit(searchRequest, RequestOptions.DEFAULT);
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
         return getSearchResult(searchResponse);
 
