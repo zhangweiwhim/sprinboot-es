@@ -1,4 +1,4 @@
-### pinyin and ik 分词
+### pinyin and hanlp 分词
 step1: es集群中安装pinyin 和 hanlp的plugin
 ```shell script
 ./bin/elasticsearch-plugin install https://github.com/KennFalcon/elasticsearch-analysis-hanlp/releases/download/v7.3.0/elasticsearch-analysis-hanlp-7.3.0.zip

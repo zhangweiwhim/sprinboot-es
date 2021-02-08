@@ -15,6 +15,7 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -53,7 +54,7 @@ public class CarInfoService {
 
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 //        MultiMatchQueryBuilder multiMatchQueryBuilder = QueryBuilders.multiMatchQuery(input, "brand", "brand.my_pinyin", "series", "series.my_pinyin");
-        MultiMatchQueryBuilder multiMatchQueryBuilder = QueryBuilders.multiMatchQuery(input, "series.my_pinyin");
+        MultiMatchQueryBuilder multiMatchQueryBuilder = QueryBuilders.multiMatchQuery(input, "series.my_pinyin", "price.my_pinyin");
         multiMatchQueryBuilder.minimumShouldMatch("100%");
         multiMatchQueryBuilder.type(MultiMatchQueryBuilder.Type.BEST_FIELDS);
         searchSourceBuilder.query(multiMatchQueryBuilder);
@@ -67,6 +68,8 @@ public class CarInfoService {
 //        highlightBuilder.field(highlightBrandPY);
         HighlightBuilder.Field highlightSeriesPY = new HighlightBuilder.Field("series.my_pinyin");
         highlightBuilder.field(highlightSeriesPY);
+        HighlightBuilder.Field highlightPricePY = new HighlightBuilder.Field("price.my_pinyin");
+        highlightBuilder.field(highlightPricePY);
         highlightBuilder.requireFieldMatch(true);//多个高亮显示
         String leftTag = "<span style='color:#606'>";
         String rightTag = "</span>";
@@ -74,6 +77,7 @@ public class CarInfoService {
         highlightBuilder.postTags(rightTag);
         highlightBuilder.requireFieldMatch(true);
         searchSourceBuilder.highlighter(highlightBuilder);
+        searchSourceBuilder.sort("uptime", SortOrder.DESC);
         searchRequest.source(searchSourceBuilder);
 
 //        AsyncSearchResponse response = client.asyncSearch()
@@ -99,12 +103,19 @@ public class CarInfoService {
             //            hitSource.put("scores", score);
 //            String resultStr = hitSource.get("brand") + "-" + hitSource.get("series");
 
+            String hitPrice = (String) hitSource.get("price");
+            String hitSeries = (String) hitSource.get("series");
             Map<String, HighlightField> highlightFields = hit.getHighlightFields();
-            HighlightField highlight = highlightFields.get("series.my_pinyin");
+            HighlightField highlightSeries = highlightFields.get("series.my_pinyin");
+            HighlightField highlightPrice = highlightFields.get("price.my_pinyin");
             String fragmentString = "";
-            if (highlight != null) {
-                Text[] fragments = highlight.fragments();
-                fragmentString = fragments[0].string();
+            if (highlightSeries != null) {
+                Text[] fragments = highlightSeries.fragments();
+                fragmentString = fragments[0].string() + "<br>" + hitPrice + "万";
+            }
+            if (highlightPrice != null) {
+                Text[] fragments = highlightPrice.fragments();
+                fragmentString = hitSeries + "<br>" + fragments[0].string() + "万";
             }
             hitSource.put("result", fragmentString);
             carInfoDocument

@@ -1,0 +1,90 @@
+POST /carinfo/_bulk
+{ "index": { "_id": 1 }}
+{ "model":"中大型","brand" : "奥迪","series":"奥迪Q5L","price":"38.78","uptime":"2020-01-01 00:00:00"}
+{ "index": { "_id": 2 }}
+{ "model":"小型车","brand" : "奔驰","series":"奔驰A级","price":"21.18","uptime":"2020-01-01 00:00:00" }
+{ "index": { "_id": 3 }}
+{ "model": "SUV","brand" : "宝马","series":"宝马X3","price":"38.98","uptime":"2020-01-01 00:00:00" }
+{ "index": { "_id": 4 }}
+{ "model":"中型车","brand" : "奔驰","series":"奔驰GLC" ,"price":"39.78","uptime":"2020-01-01 10:09:11"}
+{ "index": { "_id": 5 }}
+{ "model":"SUV","brand" : "威马","series":"威马EX6","price":"23.99","uptime":"2020-01-01 00:00:00" }
+{ "index": { "_id": 6 }}
+{ "model":"SUV","brand" : "宝沃","series":"宝沃BX5" ,"price":"12.98","uptime":"2020-01-01 00:00:00"}
+{ "index": { "_id": 7 }}
+{ "model":"SUV","brand" : "宝沃","series":"宝沃BX7" ,"price":"16.98","uptime":"2020-01-01 00:00:00"}
+{ "index": { "_id": 8 }}
+{ "model":"中大型","brand" : "奥迪","series":"奥迪A6L","price":"41.98","uptime":"2020-01-01 00:00:00"}
+{ "index": { "_id": 9 }}
+{ "model":"中大型","brand" : "奇瑞","series":"瑞虎7","price":"8.39","uptime":"2020-01-01 00:00:00"}
+{ "index": { "_id": 10 }}
+{ "model":"中大型","brand" : "奇瑞","series":"瑞虎8 PLUS","price":"12.49","uptime":"2020-01-01 00:00:00"}
+{ "index": { "_id": 11 }}
+{ "model":"中型车","brand" : "奔驰","series":"奔驰C级" ,"price":"30.78","uptime":"2020-01-01 00:00:00"}
+{ "index": { "_id": 12 }}
+{ "model":"中型车","brand" : "奔驰","series":"奔驰GLB" ,"price":"29.28","uptime":"2020-01-01 10:10:10"}
+{ "index": { "_id": 13 }}
+{ "model":"中型车","brand" : "奔驰","series":"奔驰A级AMG" ,"price":"39.98","uptime":"2020-01-01 00:00:00"}
+{ "index": { "_id": 14 }}
+{ "model":"中型车","brand" : "奔驰","series":"奔驰EQC" ,"price":"49.98","uptime":"2020-01-01 00:00:00"}
+{ "index": { "_id": 15 }}
+{ "model":"中型车","brand" : "奔驰","series":"奔驰E级" ,"price":"43.08","uptime":"2020-01-01 00:00:00"}
+{ "index": { "_id": 16 }}
+{ "model":"中型车","brand" : "奔驰","series":"奔驰GLA" ,"price":"26.48","uptime":"2020-01-01 10:11:10"}
+{ "index": { "_id": 17 }}
+{ "model":"中型车","brand" : "奔驰","series":"奔驰V级" ,"price":"47.80","uptime":"2020-01-01 00:00:00"}
+{ "index": { "_id": 18 }}
+{ "model":"中型车","brand" : "奔驰","series":"奔驰威霆" ,"price":"29.98","uptime":"2020-01-01 00:00:00"}
+{ "index": { "_id": 19 }}
+{ "model":"中型车","brand" : "阿斯顿·马丁","series":"阿斯顿·马丁DBX" ,"price":"212.80","uptime":"2020-01-01 00:00:00"}
+{ "index": { "_id": 20 }}
+{ "model":"中型车","brand" : "阿斯顿·马丁","series":"阿斯顿·马丁DB11" ,"price":"280.80","uptime":"2020-01-01 00:00:00"}
+{ "index": { "_id": 21 }}
+{ "model":"中型车","brand" : "阿斯顿·马丁","series":"阿斯顿·马丁DBS" ,"price":"373.80","uptime":"2020-01-01 00:00:00"}
+DELETE carinfo
+
+
+GET carinfo/_search
+{
+  "query": {
+    "multi_match": {
+      "query": "3978",
+      "fields": [
+        "price.my_pinyin",
+        "series.my_pinyin^1.0"
+      ],
+      "type": "best_fields",
+      "operator": "OR",
+      "slop": 0,
+      "prefix_length": 0,
+      "max_expansions": 50,
+      "minimum_should_match": "100%",
+      "zero_terms_query": "NONE",
+      "auto_generate_synonyms_phrase_query": true,
+      "fuzzy_transpositions": true,
+      "boost": 1
+    }
+  },
+  "highlight": {
+    "pre_tags": [
+      "<span style='color:red'>"
+    ],
+    "post_tags": [
+      "</span>"
+    ],
+    "number_of_fragments": 100,
+    "require_field_match": "true",
+    "no_match_size": 0,
+    "fields": {
+      "price.my_pinyin": {},
+      "series.my_pinyin": {}
+
+    }
+  },"sort": [
+    {
+      "uptime": {
+        "order": "desc"
+      }
+    }
+  ]
+}

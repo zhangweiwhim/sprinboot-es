@@ -38,17 +38,6 @@ POST /carinfo/_bulk
 
 DELETE carinfo
 
-GET /carinfo/_analyze
-{
-  "text": ["宝沃"],
-  "analyzer": "ik_pinyin_analyzer"
-}
-
-
-
-
-
-
 
 GET carinfo/_search
 {

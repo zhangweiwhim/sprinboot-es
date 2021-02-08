@@ -1,0 +1,93 @@
+# hanlp-pinyin
+PUT carinfo
+{
+  "settings": {
+    "number_of_shards": "1",
+    "index.refresh_interval": "15s",
+    "index": {
+      "analysis": {
+        "analyzer": {
+          "ik_pinyin_analyzer": {
+            "type": "custom",
+            "tokenizer": "hanlp_standard",
+            "char_filter": "charconvert",
+            "filter": [
+              "split_filter",
+              "pinyin_filter"
+            ]
+          }
+        },
+        "filter": {
+          "pinyin_filter": {
+            "type": "pinyin",
+            "keep_first_letter": false,
+            "keep_none_chinese": true
+          },
+          "split_filter": {
+            "type": "delimited_payload",
+            "encoding": "identity",
+            "delimiter": "|"
+          }
+        },
+        "char_filter": {
+          "charconvert": {
+            "type": "mapping",
+            "mappings_path": "/usr/share/elasticsearch/config/mapping.file"
+          }
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "model": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword"
+          }
+        }
+      },
+      "brand": {
+        "type": "text",
+        "analyzer": "hanlp_standard",
+        "search_analyzer": "hanlp_standard",
+        "fields": {
+          "my_pinyin": {
+            "type": "text",
+            "analyzer": "ik_pinyin_analyzer",
+            "search_analyzer": "ik_pinyin_analyzer"
+          }
+        }
+      },
+      "series": {
+        "type": "text",
+        "analyzer": "hanlp_standard",
+        "search_analyzer": "hanlp_standard",
+        "fields": {
+          "my_pinyin": {
+            "type": "text",
+            "analyzer": "ik_pinyin_analyzer",
+            "search_analyzer": "ik_pinyin_analyzer"
+          }
+        }
+      },
+      "price":{
+        "type": "text",
+        "analyzer": "hanlp_standard",
+        "search_analyzer": "hanlp_standard",
+      "fields": {
+          "my_pinyin": {
+            "type": "text",
+            "analyzer": "ik_pinyin_analyzer",
+            "search_analyzer": "ik_pinyin_analyzer"
+          }
+        }
+      },
+    "uptime":{
+        "type": "date",
+        "format": [ "yyyy-MM-dd HH:mm:ss"]
+      }
+    }
+  }
+}
