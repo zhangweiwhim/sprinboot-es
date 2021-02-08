@@ -95,7 +95,7 @@
             methods: {
                 search() {
                     if (this.val) {
-                        axios.post(`http://10.43.41.27:8080/carInfo/searchCarInfo/${this.val.trim()}`).then(res => {
+                        axios.post(`http://localhost:8080/carInfo/searchCarInfo/${this.val.trim()}`).then(res => {
                             let timer = null
                             if (timer) clearTimeout(timer)
                             timer = setTimeout(() => {
