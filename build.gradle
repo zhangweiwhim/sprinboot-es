@@ -16,7 +16,8 @@ Map<String, String> versions = [
         LombokVersion : "1.18.16",
         JdVersion     : "2.11.4",
         GsonVersion   : "2.8.5",
-        JasyptVersion : "3.0.3"
+        JasyptVersion : "3.0.3",
+        PoolVerson    : "2.9.0"
 ]
 dependencies {
     implementation('org.springframework.boot:spring-boot-starter-web')
@@ -25,6 +26,7 @@ dependencies {
     implementation('org.elasticsearch:elasticsearch:' + versions.ElasticVersion)
     implementation('org.elasticsearch.client:elasticsearch-rest-high-level-client:' + versions.ElasticVersion)
     implementation('com.github.ulisesbocchio:jasypt-spring-boot-starter:' + versions.JasyptVersion)
+    implementation('org.apache.commons:commons-pool2:' + versions.PoolVerson)
     testCompile group: 'junit', name: 'junit', version: '4.12'
 
 }

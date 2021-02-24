@@ -32,4 +32,9 @@ public class CarInfoController {
     public List<CarInfoDocument> searchCarInfo(@PathVariable String input) throws Exception {
         return carInfoService.findByInput(input);
     }
+
+    @PostMapping("/searchCarInfo/{input}/{pageSize}/{pageNo}")
+    public List<CarInfoDocument> searchCarInfoByPage(@PathVariable String input, @PathVariable int pageNo, @PathVariable int pageSize) throws Exception {
+        return carInfoService.findByInputAndPage(input, pageNo, pageSize);
+    }
 }

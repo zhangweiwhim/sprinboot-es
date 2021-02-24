@@ -2,6 +2,7 @@ package com.zhangweiwhim.es.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zhangweiwhim.es.document.CarInfoDocument;
+import com.zhangweiwhim.es.model.PageModel;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -9,16 +10,20 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.asyncsearch.AsyncSearchResponse;
 import org.elasticsearch.client.asyncsearch.SubmitAsyncSearchRequest;
 import org.elasticsearch.common.text.Text;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -84,6 +89,43 @@ public class CarInfoService {
 //                .submit(searchRequest, RequestOptions.DEFAULT);
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
         return getSearchResult(searchResponse);
+
+    }
+
+
+    /**
+     * 分页查询
+     *
+     * @param input
+     * @param pageNo
+     * @param pageSize
+     * @return
+     */
+    public List<CarInfoDocument> findByInputAndPage(String input, int pageNo, int pageSize) throws IOException {
+
+        SearchRequest searchRequest = new SearchRequest();
+        searchRequest.indices(INDEX);
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        MultiMatchQueryBuilder multiMatchQueryBuilder = QueryBuilders.multiMatchQuery(input, "series.my_pinyin", "price.my_pinyin");
+        multiMatchQueryBuilder.minimumShouldMatch("100%");
+        multiMatchQueryBuilder.type(MultiMatchQueryBuilder.Type.BEST_FIELDS);
+        searchSourceBuilder.query(multiMatchQueryBuilder);
+        searchSourceBuilder.from((pageNo - 1 )* pageSize).size(pageSize).sort("uptime", SortOrder.DESC);
+
+        searchRequest.source(searchSourceBuilder);
+        SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+
+        SearchHits searchHit = searchResponse.getHits();
+        long totalRows = searchHit.getTotalHits().value;
+        List<CarInfoDocument> carInfoDocument = new ArrayList<>();
+        for (SearchHit hit : searchHit) {
+            Map<String, Object> hitSource = hit.getSourceAsMap();
+            carInfoDocument
+                    .add(objectMapper
+                            .convertValue(hitSource, CarInfoDocument.class));
+        }
+
+        return carInfoDocument;
 
     }
 
